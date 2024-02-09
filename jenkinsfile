@@ -1,7 +1,8 @@
 pipeline {
-    agent { label 'jenkinsslave01' }
+    agent none
     stages {
         stage('Compile') {
+            agent { label 'jenkinsslave01' }
             steps {
                     // Get some code from a GitHub repository
                     sh "who "
@@ -14,6 +15,7 @@ pipeline {
                 }
             }
         stage('Test') {
+            agent { label 'jenkinsslave02' }
             steps {
                     // Get some code from a GitHub repository
                     git branch:'main', url:'https://github.com/karthickmuthaiyan/IGP1.git'
@@ -24,6 +26,7 @@ pipeline {
                 }
             }
         stage('Package') {
+            agent { label 'jenkinsslave03' }
             steps {
                     // Get some code from a GitHub repository
                     git branch:'main', url:'https://github.com/karthickmuthaiyan/IGP1.git'
