@@ -1,0 +1,47 @@
+pipeline {
+    agent { label 'jenkinagent01' }
+    stages {
+        stage('Package') {
+            //agent { label 'jenkinagent01' }
+            steps {
+                    // Get some code from a GitHub repository
+                    git branch:'main', url:'https://github.com/karthickmuthaiyan/IGP1.git'
+                    // Run Maven on a Unix agent.
+                    sh "mvn -Dmaven.test.failure.ignore=true clean package"
+                    // To run Maven on a Windows agent, use
+                    //bat "mvn -Dmaven.test.failure.ignore=true clean package"
+                }
+            post {
+                    // If Maven was able to run the tests, even if some of the test
+                    // failed, record the test results and archive the jar file.
+            success {
+                        //junit '**/target/surefire-reports/TEST-*.xml'
+                        archiveArtifacts 'target/*.war'
+                    }       
+                }
+            }
+	stage('Docker Build and Tag') {
+           steps {
+              
+                sh 'docker build -t igp1webapp:latest .' 
+                sh 'docker tag igp1webapp karthickmuthaiyan/igp1webapp:latest'
+                //sh 'docker tag samplewebapp karthickmuthaiyan/samplewebapp:$BUILD_NUMBER'
+               
+          	}
+        }
+	stage('Publish image to Docker Hub') {
+            steps {
+        	    withDockerRegistry([ credentialsId: "dockerHub", url: "" ]) {
+	            sh  'docker push karthickmuthaiyan/igp1webapp:latest'
+        	//  sh  'docker push karthickmuthaiyan/samplewebapp:$BUILD_NUMBER' 
+	                }
+                  
+	        }
+        }
+       stage('Run Docker container on Jenkins Agent') {     
+            steps {
+                sh "docker run -d -p 8080:8080 karthickmuthaiyan/igp1webapp"
+             }
+        }
+    }
+ }
