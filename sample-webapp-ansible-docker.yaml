@@ -32,7 +32,7 @@
     ignore_errors: yes
 
   - name: Delete existing Docker images from the Control Node
-    shell: docker rmi `docker image ls | egrep "sample-webapp-docker-image" | awk '{print$3}'`
+    shell: docker rmi `docker image ls | egrep "sample-webapp-docker-image" | awk '{print$3}'` -f
     ignore_errors: yes
 
   - name: Build a Docker image using ABCtechnologies-1.0.war file
