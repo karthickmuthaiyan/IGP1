@@ -2,7 +2,7 @@ FROM tomcat:latest
 
 LABEL maintainer="Karthick Muthaiyan"
 
-COPY target/ABCtechnologies-1.0.war /usr/local/tomcat/webapps/ROOT.war
+COPY ABCtechnologies-1.0.war /usr/local/tomcat/webapps/ROOT.war
 
 EXPOSE 8080
 
