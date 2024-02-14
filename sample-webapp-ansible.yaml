@@ -22,3 +22,12 @@
         path: /opt/docker
         pull: false
       source: build
+  - name: Run Docker container using simple-docker-image
+    docker_container:
+      name: sample-webapp--docker-container
+      image: sample-webapp-docker-image:latest
+      state: started
+      recreate: yes
+      detach: true
+      ports:
+        - "8080:8080"
