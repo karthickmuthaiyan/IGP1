@@ -1,13 +1,22 @@
-apiVersion: v1
-kind: Service
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: sample-webApp
-spec:
-  selector:
+  name: sample-webApp-deployment
+  labels:
     role: app
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
-      nodePort: 32000
-  type: NodePort
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      role: sample-webApp
+  template:
+    metadata:
+      labels:
+        role: sample-webApp
+    spec:
+      containers:
+      - name: sameple-webApp-c
+        image: "{{ image_id }}"
+        resources:
+          requests:
+            cpu: 10m
