@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: sample-web-app
+  name: sample-web-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample-web-app
+  template:
+    metadata:
+      labels:
+        app: sample-web-app
+    spec:
+      containers:
+      - image: karthickmuthaiyan/sample-webapp-docker-image
+        name: sample-webapp-docker-image
