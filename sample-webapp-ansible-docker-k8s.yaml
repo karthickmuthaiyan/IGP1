@@ -47,6 +47,10 @@
       repository: karthickmuthaiyan/sample-webapp-docker-image:latest
       push: yes
       source: build
-
+      
+  - name: Delete existing Docker images from the Control Node
+    shell: docker rmi `docker image ls | egrep "sample-webapp-docker-image" | awk '{print$3}'` -f
+    ignore_errors: yes
+    
 - name: Import Ansible playbook to deploy into Kubernetes cluster
   import_playbook: ansible-kubectl-deployment.yaml
