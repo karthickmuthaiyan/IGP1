@@ -1,8 +1,8 @@
-- hosts: localhost
-  tasks:
 ---
 #Sample Ansible Playbook to build and run a Docker containers
-- name: Deploy the service
+- hosts: localhost
+  tasks:
+  - name: Deploy the service
     k8s:
       state: present
       definition: "{{ lookup('template', 'k8s-sample-webApp-dep.yaml.yml') | from_yaml }}"
