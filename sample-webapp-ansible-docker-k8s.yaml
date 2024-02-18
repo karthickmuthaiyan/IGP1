@@ -1,5 +1,3 @@
-- hosts: localhost
-  tasks:
 ---
 #Sample Ansible Playbook to build and run a Docker containers
 
@@ -49,18 +47,6 @@
       repository: karthickmuthaiyan/sample-webapp-docker-image:latest
       push: yes
       source: build
-  - name: Delete existing Docker images from the Control Node
-    shell: docker rmi `docker image ls | egrep "sample-webapp-docker-image" | awk '{print$3}'` -f
-    ignore_errors: yes
-  - name: Deploy the service
-    k8s:
-      state: present
-      definition: "{{ lookup('template', 'k8s-service.yml') | from_yaml }}"
-      validate_certs: no
-      namespace: default
-  - name: Deploy the application
-    k8s:
-      state: present
-      validate_certs: no
-      namespace: default
-      definition: "{{ lookup('template', 'k8s-deployment.yml') | from_yaml }}"
+
+- name: Import Ansible playbook to deploy into Kubernetes cluster
+  import_playbook: ansible-kubectl-deployment.yaml
