@@ -1,0 +1,221 @@
+sudo apt-get install openjdk-11-jdk-headless
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \ 
+/usr/share/keyrings/jenkins-keyring.asc > /dev/null         
+
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \ 
+https://pkg.jenkins.io/debian-stable binary/ | sudo tee \ 
+/etc/apt/sources.list.d/jenkins.list > /dev/null  
+
+sudo apt update 
+sudo apt install jenkins -y   
+
+sudo systemctl start jenkins
+sudo systemctl enable jenkins    
+
+
+http://20.127.161.116:8080/
+
+Install mvn 
+
+sudo apt install maven
+
+On Slave:
+==========
+sudo apt update
+sudo apt-get install openjdk-11-jdk-headless
+sudo apt install maven
+
+Connect as agent (Add agent and run this on slave nodes)
+=================
+curl -sO http://20.127.161.116:8080/jnlpJars/agent.jar
+java -jar agent.jar -jnlpUrl http://20.127.161.116:8080/computer/agent01/jenkins-agent.jnlp -secret fc7cb5a137b94e9b153a9f183ba0dafb6445aa6265d0d491c9310a02b8b07edc -workDir "/var/lib/jenkins"
+
+curl -sO http://20.127.161.116:8080/jnlpJars/agent.jar
+java -jar agent.jar -jnlpUrl http://20.127.161.116:8080/computer/agent02/jenkins-agent.jnlp -secret e60ba8a1964c96faaeea0cef8a5df2550e4077295004bd3760c1a6758e4f5ed0 -workDir "/var/lib/jenkins"
+
+
+java -jar agent.jar -jnlpUrl http://20.127.161.116:8080/computer/agent03/jenkins-agent.jnlp -secret 9160367c3ff35de79daf2177f6d519662f0524477c8e7c4efcc06359b74fb700 -workDir "/var/lib/jenkins"
+
+
+
+Install Docker
+=================
+
+sudo apt update
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+apt-cache policy docker-ce
+sudo apt install docker-ce
+sudo systemctl status docker
+sudo usermod -aG docker ${USER}
+
+https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04
+
+docker login 
+
+
+Configure docker to run remotely 
+==================================
+On docker node
+groupadd jenkins
+useradd -d /home/jenkins -g jenkins jenkins 
+mkdir /var/lib/jenkins 
+mkdir /home/jenkins
+usermod -aG docker jenkins
+
+Configure jenkins agent on docker node
+
+sudo apt update
+sudo apt-get install openjdk-11-jdk-headless
+sudo apt install maven
+
+Connect as agent (Add agent and run this on slave nodes)
+=================
+curl -sO http://20.127.161.116:8080/jnlpJars/agent.jar
+java -jar agent.jar -jnlpUrl http://20.127.161.116:8080/computer/agent01/jenkins-agent.jnlp -secret fc7cb5a137b94e9b153a9f183ba0dafb6445aa6265d0d491c9310a02b8b07edc -workDir "/var/lib/jenkins"
+
+now you can run job on agent which has docker installed  and jenkins can run docker command
+
+
+Configure git with jenkins (using SSH)
+======================================
+Didn't do it , for my use case
+
+
+Running from jenkins master node (by using docker client only install) to call remote docker
+=============================================================================================
+Note : this require passwordless ssh setup between jenkins and remote server
+
+ sudo apt-get update &&      sudo apt-get install         ca-certificates         curl         gnupg         lsb-release
+ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+ sudo apt install docker-ce-cli
+ sudo systemctl status docker
+ docker -H -h
+ docker -H  -H ssh://azureuser@10.0.0.5 info
+ docker -H ssh://azureuser@10.0.0.5 info
+ docker -H ssh://azureuser@10.0.0.5 version
+ cat ~/.ssh/id_rsa
+ docker -H ssh://azureuser@10.0.0.5 version
+ docker -H ssh://azureuser@10.0.0.5 images
+ docker ps
+ docker -H ssh://azureuser@10.0.0.5 ps
+ docker -H ssh://azureuser@10.0.0.5 ps -a
+
+
+Write a Docket file. Create an Image and container on the Docker host. Integrate docker host with Jenkins. Create CI/CD job on Jenkins to build and deploy on a container.  
+
+1. Enhance the package job created in step 1 of task 2 to create a docker image. 
+2. In the Docker image, add code to move the war file to the Tomcat server and build the image. 
+
+
+Integrate the Docker host with Ansible. Write an Ansible playbook to create an image and create a continuer. Integrate Ansible with Jenkins. Deploy Ansible-playbook. CI/CD job to build code on ansible and deploy it on docker container  
+1. Deploy Artifacts on Kubernetes 
+2. Write pod, service, and deployment manifest file 
+3. Integrate Kubernetes with Ansible  4. Ansible playbook to create deployment and service 
+
+
+Install ansible
+
+sudo apt-add-repository ppa:ansible/ansible
+sudo apt update
+sudo apt install ansible
+
+
+On the target docker machine 
+=============================
+Install pip & docker python lib
+sudo apt install python3-pip
+pip install docker
+
+Insall Ansible plugin on jenkins as well
+
+Create secret in ansible vault 
+
+ansible-vault create vault.yml
+
+
+
+Install azure-cli on Ansible node
+=================================
+
+sudo apt remove azure-cli -y && sudo apt autoremove -y
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+OR 
+
+sudo apt-get update
+sudo apt-get install ca-certificates curl apt-transport-https lsb-release gnupg
+sudo mkdir -p /etc/apt/keyrings
+curl -sLS https://packages.microsoft.com/keys/microsoft.asc |
+    gpg --dearmor |
+    sudo tee /etc/apt/keyrings/microsoft.gpg > /dev/null
+sudo chmod go+r /etc/apt/keyrings/microsoft.gpg
+sudo mkdir -p /etc/apt/keyrings
+curl -sLS https://packages.microsoft.com/keys/microsoft.asc |
+    gpg --dearmor |
+    sudo tee /etc/apt/keyrings/microsoft.gpg > /dev/null
+sudo chmod go+r /etc/apt/keyrings/microsoft.gpg
+AZ_DIST=$(lsb_release -cs)
+echo "deb [arch=`dpkg --print-architecture` signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ $AZ_DIST main" |
+    sudo tee /etc/apt/sources.list.d/azure-cli.list
+sudo apt-get update
+sudo apt-get install azure-cli
+
+Install kubectl 
+===================
+/usr/local/bin/kubectl
+
+az cloud set --name AzureCloud
+az login
+az account set --subscription 3043b12b-f529-43a5-b7dd-57ac7979fde4
+az aks get-credentials --resource-group Lab --name akslab01
+az aks get-credentials --resource-group Lab --name akslab01 --overwrite-existing
+pip install kubernetes (On ansible node)
+
+
+kubectl expose deployment sample-web-app --name sample-web-app-lb --type=LoadBalancer --port=8080 --dry-run=client -o yaml
+kubectl create deployment sample-web-app --image=karthickmuthaiyan/sample-webapp-docker-image --dry-run=client -o yaml
+
+
+Commit the scripts into git
+
+Install Helm
+===============
+curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+sudo apt-get install apt-transport-https --yes
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+sudo apt-get update
+sudo apt-get install helm
+
+Add prometheus repo 
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install prometheus \
+  prometheus-community/kube-prometheus-stack \
+  --namespace monitoring \
+  --create-namespace
+
+NAME: prometheus
+LAST DEPLOYED: Sun Feb 18 23:12:28 2024
+NAMESPACE: monitoring
+STATUS: deployed
+REVISION: 1
+NOTES:
+kube-prometheus-stack has been installed. Check its status by running:
+  kubectl --namespace monitoring get pods -l "release=prometheus"
+
+Visit https://github.com/prometheus-operator/kube-prometheus for instructions on how to create & configure Alertmanager and Prometheus instances using the Operator.
+
+Expose Grafana
+kubectl port-forward svc/prometheus-grafana -n monitoring 4000:80 
+	Can also expose the cluster IP's to Load Balancer by editing the service
+
+Prometheus metrics
+
+CPU at machine level 
+	avg by (instance,mode) (irate(node_cpu_seconds_total{mode!='idle'}[1m]))
+Memory %
+	100 * (1 - ((avg_over_time(node_memory_MemFree_bytes[10m]) + avg_over_time(node_memory_Cached_bytes[10m]) + avg_over_time(node_memory_Buffers_bytes[10m])) / avg_over_time(node_memory_MemTotal_bytes[10m])))
+
